@@ -1,0 +1,36 @@
+{%extends "home.html"%}
+
+    {% block title %}
+<title>Update</title>
+    {% endblock %}
+
+   {% block content %}
+ <form method="post" action="" class="w-50 m-5">
+            {{ form.hidden_tag() }}
+        {%for i in item%}
+            <div class="form-group">
+
+
+                {{ form.Title.label(class="form-control-label" ) }}
+
+                {{ form.Title(class="form-control form-control-lg", value= i.title )}}
+
+
+            </div>
+            <div class="form-group">
+                {{ form.description.label(class="form-control-label") }}
+
+                {{ form.description(class="form-control form-control-lg", value=i.description) }}
+            </div>
+            <div class="form-group">
+                {{ form.dateofcompletion.label(class="form-control-label") }}
+
+                {{ form.dateofcompletion(class="form-control form-control-lg", value=i.Deadline ) }}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+ {%endfor%}
+        </form>
+{% endblock %}
