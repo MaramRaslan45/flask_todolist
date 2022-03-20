@@ -1,9 +1,14 @@
 import datetime
 import json
 
-from flask import Flask,render_template,request,redirect,url_for
+from flask import Flask,render_template,request,redirect,url_for,jsonify
 from forms import CreateForm,UpdateForm
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token)
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "secret1234"
 
@@ -11,6 +16,7 @@ DATABASE_URI = "sqlite:///todo.db"
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
 db = SQLAlchemy(app)
+jwt = JWTManager(app)
 
 
 class Item (db.Model):
@@ -19,12 +25,37 @@ class Item (db.Model):
     description = db.Column(db.String,nullable=False)
     Deadline = db.Column(db.Date,default=datetime.date.today)
 
-items=[]
+usernames = {'maram': 123, 'ahmed': 122,'khaled':111,'mohamed':123}
+token=[]
 @app.route('/', methods=['POST', 'GET'])
 def home():
     items=Item.query.all()
     return render_template('home.html',items=items)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        print(username)
+        password = request.form.get("password")
+        if username in usernames:
+            if usernames.get(username) == int(password):                access_token = create_access_token(identity=username)
+                refresh_token = create_refresh_token(identity=username)
+                token.append(access_token)
+                return jsonify {
+                    'status': 'success',
+                    'data': {
+                        'access_token': access_token,
+                        'refresh_token': refresh_token
+                    }
+                }
+        else:
+            return render_template('login.html')
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    token.clear()
+    return redirect(url_for('login'))
 
 
 @app.route('/create',methods=['GET','POST'])
